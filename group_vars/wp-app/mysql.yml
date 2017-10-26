@@ -1,0 +1,25 @@
+---
+
+mysql_packages:
+  - mysql-client-5.7
+  - mysql-server-5.7
+  - mysql-client-core-5.7
+  - mysql-server-core-5.7
+
+# MySQL connection settings.
+mysql_port: "3306"
+mysql_bind_address: "0.0.0.0"
+mysql_root_username: "root"
+mysql_root_password: "{{ MYSQL_ROOT_PASSWORD }}"
+
+# Set this to `yes` to forcibly update the root password.
+mysql_root_password_update: yes
+
+mysql_databases:
+  - name: wordpress
+
+mysql_users:
+  - name: wordpress
+    host: "localhost"
+    password: "{{ MYSQL_WORDPRESS_PASSWORD }}"
+    priv: "paymentmigration.*:ALL"

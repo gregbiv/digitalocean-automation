@@ -73,6 +73,11 @@ deployment_env_vars                             :
     APP_PATH                                    : "{{ deployment_dir_work }}"
     APP_NAME                                    : "{{ deployment_name }}"
 
+    WORDPRESS_DB_HOST                           : "localhost"
+    WORDPRESS_DB_NAME                           : "wordpress"
+    WORDPRESS_DB_USER                           : "wordpress"
+    WORDPRESS_DB_PASSWORD                       : "{{ MYSQL_WORDPRESS_PASSWORD }}"
+
   live                                          :
     HTTP_PROXY                                  : ""
     APP_ENV                                     : "live"
@@ -80,3 +85,8 @@ deployment_env_vars                             :
     APP_ERROR_LOG                               : "true"
     APP_PATH                                    : "{{ deployment_dir_work }}"
     APP_NAME                                    : "{{ deployment_name }}"
+
+    WORDPRESS_DB_HOST                           : "localhost"
+    WORDPRESS_DB_NAME                           : "wordpress"
+    WORDPRESS_DB_USER                           : "wordpress"
+    WORDPRESS_DB_PASSWORD                       : "{{ MYSQL_WORDPRESS_PASSWORD }}"

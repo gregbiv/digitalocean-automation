@@ -15,6 +15,16 @@
       raw: test -e /usr/bin/python || (sudo apt -y -qq update && sudo apt install -y -qq python-minimal libpython2.7-dev)
       changed_when: False
 
+- name: Deploy MySQL servers and databases
+  hosts: data-exchange
+  become: yes
+  pre_tasks:
+  - name: Add MySQL repository key
+    apt_key: url=http://repo.mysql.com/RPM-GPG-KEY-mysql state=present
+
+  - name: Add MySQL Server repository
+    apt_repository: repo='deb http://repo.mysql.com/apt/debian/ jessie mysql-5.6' state=present
+
 - name: Configure WP application
   hosts: wp-app
   become: True
@@ -22,6 +32,7 @@
   roles:
     - { role: php-core,                                  tags: ["php", "php-core"]               }
     - { role: php-fpm,                                   tags: ["php", "php-fpm"]                }
+    - { role: mysql,                                     tags: ["mysql", "database"]             }
     - { role: deployment,                                tags: ["deployment"]                    }
     - { role: nginx,                                     tags: ["nginx", "deployment"]           }
     - { role: logrotate,                                 tags: ["logrotate", "logging"]          }
