@@ -2,7 +2,7 @@
 
 # Rotate app, nginx and php logs
 logrotate_scripts                               :
-  - name                                        : wp-app
+  - name                                        : wp-blog
     path                                        : "{{ deployment_dir_logs }}/*.log"
     options                                     :
                                                   - hourly

@@ -12,13 +12,13 @@ nginx_http_params :
                     gzip_types      : "text/plain text/css text/js text/xml text/javascript application/javascript application/x-javascript application/json application/xml application/xml+rss"
 
 nginx_site                          :
-  - file_name                       : "wp-app"
+  - file_name                       : "wp-blog"
     blocks                          :
        - type                       : "server"
          client_max_body_size       : "100M"
          listen                     : "80"
          server_name                : "{{ inventory_hostname }} www.{{ inventory_hostname }}"
-         root                       : "{{ deployment_dir_current }}/"
+         root                       : "{{ deployment_dir_current }}/web"
          index                      : "index.php index.html index.htm"
          access_log                 : '/var/log/nginx/access-{{ inventory_hostname }}.log'
          error_log                  : '/var/log/nginx/error-{{ inventory_hostname }}.log'
@@ -40,7 +40,6 @@ nginx_site                          :
             fastcgi_split_path_info : "^(.+\\.php)(/.*)$"
             include                 :
                                       - "/etc/nginx/fastcgi_params"
-                                      - "{{ deployment_dir_base }}/current/fastcgi_env_vars"
             fastcgi_param           :
                                       - "SCRIPT_FILENAME $realpath_root$fastcgi_script_name"
                                       - "DOCUMENT_ROOT $realpath_root"

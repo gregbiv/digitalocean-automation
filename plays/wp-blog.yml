@@ -1,7 +1,7 @@
 ---
 
 - name: Provision WP instance(s) in DigitalOcean
-  hosts: wp-app
+  hosts: wp-blog
   connection: local
   gather_facts: False
   tasks:
@@ -46,7 +46,7 @@
       when: new_droplet.droplet is defined
 
 - name: Check for python2.7
-  hosts: wp-app
+  hosts: wp-blog
   gather_facts: False
   tasks:
     - name: install python 2.7
@@ -64,7 +64,7 @@
     apt_repository: repo='deb http://repo.mysql.com/apt/debian/ jessie mysql-5.6' state=present
 
 - name: Configure WP application
-  hosts: wp-app
+  hosts: wp-blog
   become: True
   gather_facts: True
   roles:

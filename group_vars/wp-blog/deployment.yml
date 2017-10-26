@@ -1,7 +1,7 @@
 ---
 ## For full and default variables
 ## See roles/external/ansible-deployment/defaults/main.yml
-deployment_name                                 : "wp-app"
+deployment_name                                 : "wp-blog"
 deployment_user                                 : "gregbiv"
 deployment_user_home                            : "/gregbiv"
 deployment_version                              : "latest"
@@ -34,10 +34,9 @@ deployment_github_release_dest_template         : True
 deployment_github_release_dest                  : "{{ deployment_github_release_art_dir }}/{{ deployment_name }}-${version}.tar.gz"
 deployment_unarchive                            : "/bin/tar -C '{{ deployment_dir_work }}' -zxvf {{ deployment_github_release_dest }} --strip-components=1"
 
-# Shell env variables
-deployment_config_shell_vars                    :
-            - vars                              : "{{ deployment_env_vars[environment_name] }}"
-              dest                              : "{{ deployment_dir_work }}/shell_env_vars.sh"
+# Env variables
+deployment_config_dotenv_vars                   : "{{ deployment_env_vars[environment_name] }}"
+deployment_config_dotenv_vars_dest              : "{{ deployment_dir_work }}/.env"
 
 deployment_config_fastcgi_parm_vars             :
             - vars                              : "{{ deployment_env_vars[environment_name] }}"
@@ -66,27 +65,44 @@ deployment_post_url_check                       :
 
 deployment_env_vars                             :
   staging                                       :
-    HTTP_PROXY                                  : ""
-    APP_ENV                                     : "staging"
-    APP_DEBUG                                   : "false"
-    APP_ERROR_LOG                               : "true"
-    APP_PATH                                    : "{{ deployment_dir_work }}"
-    APP_NAME                                    : "{{ deployment_name }}"
+    DB_NAME                                     : "wordpress"
+    DB_USER                                     : "wordpress"
+    DB_PASSWORD                                 : "{{ MYSQL_WORDPRESS_PASSWORD }}"
 
-    WORDPRESS_DB_HOST                           : "localhost"
-    WORDPRESS_DB_NAME                           : "wordpress"
-    WORDPRESS_DB_USER                           : "wordpress"
-    WORDPRESS_DB_PASSWORD                       : "{{ MYSQL_WORDPRESS_PASSWORD }}"
+    # Optional variables
+    DB_HOST                                     : "localhost"
+    DB_PREFIX                                   : "wp_"
 
+    WP_ENV                                      : "staging"
+    WP_HOME                                     : "http://{{ inventory_hostname }}"
+    WP_SITEURL                                  : "${WP_HOME}/wp"
+
+    AUTH_KEY                                    : '{{ AUTH_KEY }}'
+    SECURE_AUTH_KEY                             : '{{ SECURE_AUTH_KEY }}'
+    LOGGED_IN_KEY                               : '{{ LOGGED_IN_KEY }}'
+    NONCE_KEY                                   : '{{ NONCE_KEY }}'
+    AUTH_SALT                                   : '{{ AUTH_SALT }}'
+    SECURE_AUTH_SALT                            : '{{ SECURE_AUTH_SALT }}'
+    LOGGED_IN_SALT                              : '{{ LOGGED_IN_SALT }}'
+    NONCE_SALT                                  : '{{ NONCE_SALT }}'
   live                                          :
-    HTTP_PROXY                                  : ""
-    APP_ENV                                     : "live"
-    APP_DEBUG                                   : "false"
-    APP_ERROR_LOG                               : "true"
-    APP_PATH                                    : "{{ deployment_dir_work }}"
-    APP_NAME                                    : "{{ deployment_name }}"
+    DB_NAME                                     : "wordpress"
+    DB_USER                                     : "wordpress"
+    DB_PASSWORD                                 : "{{ MYSQL_WORDPRESS_PASSWORD }}"
 
-    WORDPRESS_DB_HOST                           : "localhost"
-    WORDPRESS_DB_NAME                           : "wordpress"
-    WORDPRESS_DB_USER                           : "wordpress"
-    WORDPRESS_DB_PASSWORD                       : "{{ MYSQL_WORDPRESS_PASSWORD }}"
+    # Optional variables
+    DB_HOST                                     : "localhost"
+    DB_PREFIX                                   : "wp_"
+
+    WP_ENV                                      : "live"
+    WP_HOME                                     : "http://{{ inventory_hostname }}"
+    WP_SITEURL                                  : "${WP_HOME}/wp"
+
+    AUTH_KEY                                    : '{{ AUTH_KEY }}'
+    SECURE_AUTH_KEY                             : '{{ SECURE_AUTH_KEY }}'
+    LOGGED_IN_KEY                               : '{{ LOGGED_IN_KEY }}'
+    NONCE_KEY                                   : '{{ NONCE_KEY }}'
+    AUTH_SALT                                   : '{{ AUTH_SALT }}'
+    SECURE_AUTH_SALT                            : '{{ SECURE_AUTH_SALT }}'
+    LOGGED_IN_SALT                              : '{{ LOGGED_IN_SALT }}'
+    NONCE_SALT                                  : '{{ NONCE_SALT }}'
