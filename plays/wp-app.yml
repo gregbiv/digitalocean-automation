@@ -4,15 +4,53 @@
   hosts: wp-app
   connection: local
   gather_facts: False
-  roles:
-    - { role: digitalocean-provision, tags: [] }
+  tasks:
+    - name: DigitalOcean | set ssh
+      digital_ocean:
+        state: present
+        command: ssh
+        name: default
+        ssh_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub')}}"
+        api_token: "{{ DO_API_TOKEN }}"
+      register: public_ssh_key
+
+    # Create a droplet and a corresponding domain record
+    - name: DigitalOcean | create droplet
+      digital_ocean:
+        state: present
+        name: "{{ inventory_hostname }}"
+        size_id: 512mb
+        region_id: fra1
+        image_id: ubuntu-16-04-x64
+        ssh_key_ids: "{{ public_ssh_key.ssh_key.id }}"
+        api_token: "{{ DO_API_TOKEN }}"
+        unique_name: yes
+        wait: yes
+      register: new_droplet
+
+    - name: Add new host to inventory
+      add_host:
+        name: "{{ new_droplet.droplet.ip_address }}"
+        group: droplets
+        ansible_ssh_user: root
+        ansible_ssh_host: "{{ new_droplet.droplet.ip_address }}"
+        ansible_ssh_private_key_file: "~/.ssh/id_rsa.pub"
+      when: new_droplet.droplet is defined
+
+    - name: DigitalOcean | assign droplet
+      digital_ocean_domain:
+        state: present
+        name: "{{ inventory_hostname }}"
+        ip: "{{ new_droplet.droplet.ip_address }}"
+        api_token: "{{ DO_API_TOKEN }}"
+      when: new_droplet.droplet is defined
 
 - name: Check for python2.7
   hosts: wp-app
   gather_facts: False
   tasks:
     - name: install python 2.7
-      raw: test -e /usr/bin/python || (sudo apt -y -qq update && sudo apt install -y -qq python-minimal libpython2.7-dev)
+      raw: test -e /usr/bin/python || (sudo apt -y -qq update && sudo apt install -y -qq python-minimal libpython2.7-dev python-pip)
       changed_when: False
 
 - name: Deploy MySQL servers and databases
@@ -30,6 +68,7 @@
   become: True
   gather_facts: True
   roles:
+    - { role: users,                                     tags: ["users"]                         }
     - { role: php-core,                                  tags: ["php", "php-core"]               }
     - { role: php-fpm,                                   tags: ["php", "php-fpm"]                }
     - { role: mysql,                                     tags: ["mysql", "database"]             }

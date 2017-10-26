@@ -1,0 +1,4 @@
+# Lists of users to create and delete
+users:
+  - username: gregbiv
+    home: /gregbiv

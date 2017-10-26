@@ -17,7 +17,7 @@ nginx_site                          :
        - type                       : "server"
          client_max_body_size       : "100M"
          listen                     : "80"
-         server_name                : "kornienko.site {{ inventory_hostname }}"
+         server_name                : "{{ inventory_hostname }} www.{{ inventory_hostname }}"
          root                       : "{{ deployment_dir_current }}/"
          index                      : "index.php index.html index.htm"
          access_log                 : '/var/log/nginx/access-{{ inventory_hostname }}.log'

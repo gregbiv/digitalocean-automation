@@ -13,9 +13,9 @@
 - name: logrotate
   src: git+https://github.com/nickhammond/ansible-logrotate.git
   version: v0.0.3
-- name: digitalocean-provision
-  src: git+https://github.com/clayman74/ansible-digitalocean-provision.git
-  version: master
 - name: deployment
   src: git+https://github.com/hellofresh/ansible-deployment.git
   version: 0.8.1
+- name: users
+  src: git+https://github.com/singleplatform-eng/ansible-users.git
+  version: v1.2.4
