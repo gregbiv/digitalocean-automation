@@ -22,4 +22,4 @@ mysql_users:
   - name: wordpress
     host: "localhost"
     password: "{{ MYSQL_WORDPRESS_PASSWORD }}"
-    priv: "paymentmigration.*:ALL"
+    priv: "wordpress.*:ALL"
