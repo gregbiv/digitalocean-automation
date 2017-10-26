@@ -1,0 +1,88 @@
+---
+## For full and default variables
+## See roles/external/ansible-deployment/defaults/main.yml
+deployment_name                                 : "wp-app"
+deployment_user                                 : "gregbiv"
+deployment_user_home                            : "/gregbiv"
+deployment_version                              : "latest"
+deployment_latest_resolver                      : True
+
+# Delet old deployment
+deployment_delete_old                           : True
+deployment_keep_last                            : 3
+
+# Dir structure
+deployment_dir_base                             : "{{ deployment_user_home }}/src/{{ deployment_name }}"
+deployment_dir_work                             : "{{ deployment_dir_base }}/{{ deployment_version }}"
+deployment_dir_logs                             : "/var/log/{{deployment_name}}"
+deployment_dir_version_file                     : "{{ deployment_dir_base }}/{{ deployment_version_file_orginal }}"
+deployment_dir_current                          : "{{ deployment_dir_base }}/current"
+
+deployment_extra_dirs                           :
+                                                  - "{{ deployment_dir_logs }}"
+
+deployment_resolver                             : "github_releases"
+
+# Github releases Resolver
+deployment_github_release_repo                  : "gregbiv/{{ deployment_name }}"
+deployment_github_release_art_dir               : "{{ deployment_dir_base }}/artifacts"
+deployment_github_release_type                  : "{{ deployment_vars_per_environment[environment_name]['gh_release_type'] }}"
+deployment_github_release_glob                  : "*[0-9].tar.gz"
+deployment_github_release_dl_file               : "{{ deployment_name }}-{{ deployment_version }}.tar.gz"
+deployment_github_release_token                 : "{{ DEPLOYMENT_GITHUB_TOKEN }}"
+deployment_github_release_dest_template         : True
+deployment_github_release_dest                  : "{{ deployment_github_release_art_dir }}/{{ deployment_name }}-${version}.tar.gz"
+deployment_unarchive                            : "/bin/tar -C '{{ deployment_dir_work }}' -zxvf {{ deployment_github_release_dest }} --strip-components=1"
+
+# Shell env variables
+deployment_config_shell_vars                    :
+            - vars                              : "{{ deployment_env_vars[environment_name] }}"
+              dest                              : "{{ deployment_dir_work }}/shell_env_vars.sh"
+
+deployment_config_fastcgi_parm_vars             :
+            - vars                              : "{{ deployment_env_vars[environment_name] }}"
+              dest                              : "{{ deployment_dir_work }}/fastcgi_env_vars"
+
+# different config between live and staging
+deployment_vars_per_environment                 :
+  staging                                       :
+      gh_release_type                           : "release"
+  live                                          :
+      gh_release_type                           : "release"
+
+## Post deployment notifiers
+deployment_post                                 : True
+
+## Services nginx reload and fpm restart
+deployment_post_services                        :
+                                    - name      : nginx
+                                      state     : reloaded
+                                    - name      : "php{{ php_version }}-fpm"
+                                      state     : reloaded
+
+## Finally check url
+deployment_post_url_check                       :
+                                    - url       : "http://127.0.0.1"
+
+## Migrate databases after deployment
+deployment_post_scripts                         :
+                                                  - >-
+                                                    sudo -u {{ deployment_user }} bash -c "source {{ deployment_dir_work }}/shell_env_vars.sh \
+                                                      && {{ deployment_dir_work }}/vendor/bin/phinx migrate -c {{ deployment_dir_work }}/src/phinx.php"
+deployment_env_vars                             :
+  staging                                       :
+    HTTP_PROXY                                  : ""
+    APP_ENV                                     : "staging"
+    APP_DEBUG                                   : "false"
+    APP_ERROR_LOG                               : "true"
+    APP_PATH                                    : "{{ deployment_dir_work }}"
+    APP_NAME                                    : "{{ deployment_name }}"
+
+  live                                          :
+    HTTP_PROXY                                  : ""
+    APP_ENV                                     : "live"
+    APP_DEBUG                                   : "false"
+    APP_ERROR_LOG                               : "true"
+    APP_PATH                                    : "{{ deployment_dir_work }}"
+    APP_NAME                                    : "{{ deployment_name }}"
+

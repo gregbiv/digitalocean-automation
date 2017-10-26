@@ -1,0 +1,76 @@
+---
+php_calculated_max_available_memory     : "{{ ansible_memtotal_mb * 0.8 }}"
+php_calculated_max_memory_per_child     : 64
+php_calculated_max_children             : "{{ php_calculated_max_available_memory|int / php_calculated_max_memory_per_child }}"
+php_calculated_min_spare_servers        : "{{ (php_calculated_max_children|float * 0.3)|int }}"
+php_calculated_max_spare_servers        : "{{ (php_calculated_max_children|float * 0.7)|int }}"
+
+php_fpm_default_pool.delete : True
+php_fpm_version             : "7.1"
+php_fpm_apt_packages        :
+  - php7.1-fpm
+
+php_fpm_config              :
+  ## We found this in current setup in api-v2, this
+  ## restarts php-fom after 16 errors?
+  - option                  : "emergency_restart_threshold"
+    section                 : "global"
+    value                   : 16
+
+  - option                  : "emergency_restart_interval"
+    section                 : "global"
+    value                   : "1h"
+
+  - option                  : "error_log"
+    section                 : "global"
+    value                   : "/var/log/php{{ php_version }}-fpm.log"
+
+php_fpm_ini                 :
+  - option                  : "memory_limit"
+    section                 : "PHP"
+    value                   : "{{ php_calculated_max_memory_per_child }}M"
+
+  - option                  : "opcache.enable"
+    section                 : "opcache"
+    value                   : "1"
+  - option                  : "opcache.memory_consumption"
+    section                 : "opcache"
+    value                   : "32"
+  - option                  : "opcache.max_accelerated_files"
+    section                 : "opcache"
+    value                   : "16000"
+  - option                  : "opcache.revalidate_freq"
+    section                 : "opcache"
+    value                   : "0"
+  - option                  : "opcache.validate_timestamps"
+    section                 : "opcache"
+    value                   : "0"
+  - option                  : "opcache.consistency_checks"
+    section                 : "opcache"
+    value                   : "0"
+  - option                  : "opcache.interned_strings_buffer"
+    section                 : "opcache"
+    value                   : "8"
+  - option                  : "opcache.fast_shutdown"
+    section                 : "opcache"
+    value                   : "0"
+  - option                  : "opcache.load_comments"
+    section                 : "opcache"
+    value                   : "1"
+  - option                  : "opcache.save_comments"
+    section                 : "opcache"
+    value                   : "1"
+
+php_fpm_pools               :
+  - name                    : "{{ deployment_name }}"
+    user                    : "{{ deployment_user }}"
+    group                   : "{{ deployment_user }}"
+    listen                  : "127.0.0.1:9000"
+    chdir                   : "/"
+    pm.max_children         : "{{ php_calculated_max_children|int }}"
+    pm.start_servers        : "{{ php_calculated_min_spare_servers }}"
+    pm.min_spare_servers    : "{{ php_calculated_min_spare_servers }}"
+    pm.max_spare_servers    : "{{ php_calculated_max_spare_servers }}"
+    pm.max_requests         : 100
+    slowlog                 : "/var/log/php{{ php_fpm_version }}-slowlog.log"
+    request_slowlog_timeout : 1s

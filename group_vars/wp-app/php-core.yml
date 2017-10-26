@@ -1,0 +1,29 @@
+---
+## For full and default variables
+## See roles/internal/ansible-php-core/defaults/main.yml
+
+php_version                                 : "7.1"
+php_install_from_custom_repo                : true
+php_custom_repo                             : "ppa:ondrej/php"
+php_core_apt_state                          : "latest"
+php_config_path                             : "/etc/php/{{ php_version }}"
+php_packages :
+  - php{{ php_version }}
+  - php{{ php_version }}-fpm
+  - php{{ php_version }}-cli
+  - php{{ php_version }}-common
+  - php{{ php_version }}-intl
+  - php{{ php_version }}-gd
+  - php{{ php_version }}-xml
+  - php{{ php_version }}-curl
+  - php{{ php_version }}-readline
+  - php{{ php_version }}-mcrypt
+  - php{{ php_version }}-mysql
+  - php{{ php_version }}-opcache
+  - php{{ php_version }}-zip
+  - php{{ php_version }}-bcmath
+  - php{{ php_version }}-mbstring
+  - php{{ php_version }}-dev
+  - php-pear
+  - php-igbinary
+  - php-redis

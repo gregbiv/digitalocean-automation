@@ -1,0 +1,44 @@
+################ GIT Ignore ################
+
+## Ansible experimental and testing stuff
+plays-test
+plays-experimental/*
+roles/experimental/*
+!roles/external/README.md
+roles/external/*
+local.ini
+packer.ini
+
+## Ansible temp files
+*.retry
+.galaxy_install_info
+
+## Sensetive data
+.vpass
+.vpass*
+vpass
+vpass*
+
+## IDE stuff
+.idea
+
+## python stuff
+*.pyc
+
+## Ruby stuff
+bundler_gems
+.bundle
+
+## Node stuff
+node_modules/
+
+## Kitchen stuff
+tests/*/.kitchen/
+tests_run
+.kitchen
+
+## Vagrant stuff
+.vagrant
+
+## Mac stuff
+.DS_Store

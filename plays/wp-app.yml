@@ -1,0 +1,27 @@
+---
+
+- name: Provision WP instance(s) in DigitalOcean
+  hosts: wp-app
+  connection: local
+  gather_facts: False
+  roles:
+    - { role: digitalocean-provision, tags: [] }
+
+- name: Check for python2.7
+  hosts: wp-app
+  gather_facts: False
+  tasks:
+    - name: install python 2.7
+      raw: test -e /usr/bin/python || (sudo apt -y -qq update && sudo apt install -y -qq python-minimal libpython2.7-dev)
+      changed_when: False
+
+- name: Configure WP application
+  hosts: wp-app
+  become: True
+  gather_facts: True
+  roles:
+    - { role: php-core,                                  tags: ["php", "php-core"]               }
+    - { role: php-fpm,                                   tags: ["php", "php-fpm"]                }
+    - { role: deployment,                                tags: ["deployment"]                    }
+    - { role: nginx,                                     tags: ["nginx", "deployment"]           }
+    - { role: logrotate,                                 tags: ["logrotate", "logging"]          }

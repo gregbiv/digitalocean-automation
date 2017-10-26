@@ -1,0 +1,16 @@
+---
+
+ansible_user_id                         : ''
+
+# token from DigitalOcean API
+digitalocean_provision_token            : ''
+# name for your ssh key in DigitalOcean profile
+digitalocean_provision_ssh_key          : ''
+ # list of droplets to start in intentory
+digitalocean_provision_inventory_group  : []
+
+digitalocean_provision_image            : 'ubuntu-17'  # default image for droplet
+digitalocean_provision_region           : 'fra1'       # default region for droplet
+digitalocean_provision_size             : '512mb'      # default size for droplet
+
+digitalocean_provision_ssh_user         : 'root'       # default user for droplet

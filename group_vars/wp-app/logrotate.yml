@@ -1,0 +1,36 @@
+---
+
+# Rotate app, nginx and php logs
+logrotate_scripts                               :
+  - name                                        : wp-app
+    path                                        : "{{ deployment_dir_logs }}/*.log"
+    options                                     :
+                                                  - hourly
+                                                  - size 500M
+                                                  - rotate 1
+                                                  - missingok
+                                                  - compress
+                                                  - delaycompress
+                                                  - copytruncate
+  - name                                        : nginx
+    path                                        : /var/log/nginx/*.log
+    options                                     :
+                                                  - daily
+                                                  - size 500M
+                                                  - rotate 7
+                                                  - missingok
+                                                  - compress
+                                                  - delaycompress
+                                                  - copytruncate
+    scripts                                     :
+      postrotate                                : "[ -s /run/nginx.pid ] && kill -USR1 `cat /run/nginx.pid`"
+  - name                                        : php
+    path                                        : /var/log/php/**/*.log
+    options                                     :
+                                                  - daily
+                                                  - size 500M
+                                                  - rotate 7
+                                                  - missingok
+                                                  - compress
+                                                  - delaycompress
+                                                  - copytruncate
