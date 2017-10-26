@@ -17,11 +17,11 @@ nginx_site                          :
        - type                       : "server"
          client_max_body_size       : "100M"
          listen                     : "80"
-         server_name                : "wp-app.kornienko.site {{ inventory_hostname }}"
+         server_name                : "kornienko.site {{ inventory_hostname }}"
          root                       : "{{ deployment_dir_current }}/"
          index                      : "index.php index.html index.htm"
          access_log                 : '/var/log/nginx/access-{{ inventory_hostname }}.log'
-         error_log                  : '/var/log/nginx/error-{{ inventory_hostname}}.log'
+         error_log                  : '/var/log/nginx/error-{{ inventory_hostname }}.log'
          add_header                 : "X-Backend-Server $hostname"
 
        # ssl_certificate            : "/etc/ssl/certs/server.crt"
@@ -35,7 +35,7 @@ nginx_site                          :
         # PROD
          location1                  :
             type                    : "location"
-            name                    : "~ ^/(index)\\.php(/|$)"
+            name                    : "~ \\.php$"
             fastcgi_pass            : "127.0.0.1:9000"
             fastcgi_split_path_info : "^(.+\\.php)(/.*)$"
             include                 :

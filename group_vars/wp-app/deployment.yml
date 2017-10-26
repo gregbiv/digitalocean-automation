@@ -62,13 +62,8 @@ deployment_post_services                        :
 
 ## Finally check url
 deployment_post_url_check                       :
-                                    - url       : "http://127.0.0.1"
+                                    - url       : "http://127.0.0.1/"
 
-## Migrate databases after deployment
-deployment_post_scripts                         :
-                                                  - >-
-                                                    sudo -u {{ deployment_user }} bash -c "source {{ deployment_dir_work }}/shell_env_vars.sh \
-                                                      && {{ deployment_dir_work }}/vendor/bin/phinx migrate -c {{ deployment_dir_work }}/src/phinx.php"
 deployment_env_vars                             :
   staging                                       :
     HTTP_PROXY                                  : ""
@@ -85,4 +80,3 @@ deployment_env_vars                             :
     APP_ERROR_LOG                               : "true"
     APP_PATH                                    : "{{ deployment_dir_work }}"
     APP_NAME                                    : "{{ deployment_name }}"
-
