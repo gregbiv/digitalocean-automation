@@ -32,7 +32,7 @@ deployment_github_release_dl_file               : "{{ deployment_name }}-{{ depl
 deployment_github_release_token                 : "{{ DEPLOYMENT_GITHUB_TOKEN }}"
 deployment_github_release_dest_template         : True
 deployment_github_release_dest                  : "{{ deployment_github_release_art_dir }}/{{ deployment_name }}-${version}.tar.gz"
-deployment_unarchive                            : "/bin/tar -C '{{ deployment_dir_work }}' -zxvf {{ deployment_github_release_dest }} --strip-components=1"
+deployment_unarchive                            : "/bin/tar -C '{{ deployment_dir_work }}' -zxvf {{ deployment_github_release_dest }}"
 
 # Env variables
 deployment_config_dotenv_vars                   : "{{ deployment_env_vars[environment_name] }}"
@@ -75,7 +75,7 @@ deployment_env_vars                             :
 
     WP_ENV                                      : "staging"
     WP_HOME                                     : "http://{{ inventory_hostname }}"
-    WP_SITEURL                                  : "${WP_HOME}/wp"
+    WP_SITEURL                                  : "http://{{ inventory_hostname }}/wp"
 
     AUTH_KEY                                    : '{{ AUTH_KEY }}'
     SECURE_AUTH_KEY                             : '{{ SECURE_AUTH_KEY }}'
@@ -96,7 +96,7 @@ deployment_env_vars                             :
 
     WP_ENV                                      : "live"
     WP_HOME                                     : "http://{{ inventory_hostname }}"
-    WP_SITEURL                                  : "${WP_HOME}/wp"
+    WP_SITEURL                                  : "http://{{ inventory_hostname }}/wp"
 
     AUTH_KEY                                    : '{{ AUTH_KEY }}'
     SECURE_AUTH_KEY                             : '{{ SECURE_AUTH_KEY }}'
