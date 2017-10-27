@@ -14,9 +14,14 @@ nginx_http_params :
 nginx_site                          :
   - file_name                       : "wp-blog"
     blocks                          :
+       - type                         : "server"
+         listen                       : "80 default_server"
+         server_name                  : "_"
+         return                       : "301 https://$host$request_uri"
+
        - type                       : "server"
          client_max_body_size       : "100M"
-         listen                     : "80"
+         listen                     : "443 ssl"
          server_name                : "{{ inventory_hostname }} www.{{ inventory_hostname }}"
          root                       : "{{ deployment_dir_current }}/web"
          index                      : "index.php index.html index.htm"
@@ -24,8 +29,8 @@ nginx_site                          :
          error_log                  : '/var/log/nginx/error-{{ inventory_hostname }}.log'
          add_header                 : "X-Backend-Server $hostname"
 
-       # ssl_certificate            : "/etc/ssl/certs/server.crt"
-       # ssl_certificate_key        : "/etc/ssl/private/server.key"
+         ssl_certificate            : "/etc/ssl/certs/server.crt"
+         ssl_certificate_key        : "/etc/ssl/private/server.key"
        # try to serve file directly, fallback to index.php
          location0                   :
             type                     : "location"

@@ -61,7 +61,7 @@ deployment_post_services                        :
 
 ## Finally check url
 deployment_post_url_check                       :
-                                    - url       : "http://127.0.0.1/"
+                                    - url       : "https://127.0.0.1/"
 
 deployment_env_vars                             :
   staging                                       :
@@ -74,8 +74,8 @@ deployment_env_vars                             :
     DB_PREFIX                                   : "wp_"
 
     WP_ENV                                      : "staging"
-    WP_HOME                                     : "http://{{ inventory_hostname }}"
-    WP_SITEURL                                  : "http://{{ inventory_hostname }}/wp"
+    WP_HOME                                     : "https://{{ inventory_hostname }}"
+    WP_SITEURL                                  : "https://{{ inventory_hostname }}/wp"
 
     AUTH_KEY                                    : '{{ AUTH_KEY }}'
     SECURE_AUTH_KEY                             : '{{ SECURE_AUTH_KEY }}'
@@ -95,8 +95,8 @@ deployment_env_vars                             :
     DB_PREFIX                                   : "wp_"
 
     WP_ENV                                      : "live"
-    WP_HOME                                     : "http://{{ inventory_hostname }}"
-    WP_SITEURL                                  : "http://{{ inventory_hostname }}/wp"
+    WP_HOME                                     : "https://{{ inventory_hostname }}"
+    WP_SITEURL                                  : "https://{{ inventory_hostname }}/wp"
 
     AUTH_KEY                                    : '{{ AUTH_KEY }}'
     SECURE_AUTH_KEY                             : '{{ SECURE_AUTH_KEY }}'

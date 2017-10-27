@@ -54,7 +54,7 @@
       changed_when: False
 
 - name: Deploy MySQL servers and databases
-  hosts: data-exchange
+  hosts: wp-blog
   become: yes
   pre_tasks:
   - name: Add MySQL repository key
@@ -62,6 +62,27 @@
 
   - name: Add MySQL Server repository
     apt_repository: repo='deb http://repo.mysql.com/apt/debian/ jessie mysql-5.6' state=present
+
+- name: make sure SSL certificate is installed
+  hosts: wp-blog
+  tasks:
+    - copy:
+        content="{{ ssl_certificate }}"
+        dest=/etc/ssl/certs/server.crt
+        owner=root
+        group=root
+        mode=0644
+
+- name: make sure SSL private key is installed
+  hosts: wp-blog
+  tasks:
+    - copy:
+        content="{{ ssl_private_key }}"
+        dest=/etc/ssl/private/server.key
+        owner=root
+        group=root
+        mode=0600
+      no_log: true
 
 - name: Configure WP application
   hosts: wp-blog
