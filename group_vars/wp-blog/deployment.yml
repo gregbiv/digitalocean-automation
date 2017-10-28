@@ -63,6 +63,10 @@ deployment_post_services                        :
 deployment_post_url_check                       :
                                     - url       : "https://127.0.0.1/"
 
+## Migrate databases after deployment
+deployment_post_scripts                         :
+                                                  - >-
+                                                    sudo -u {{ deployment_user }} bash -c "{{ deployment_dir_work }}/vendor/bin/phinx migrate -c {{ deployment_dir_work }}/config/phinx.php"
 deployment_env_vars                             :
   staging                                       :
     DB_NAME                                     : "wordpress"
