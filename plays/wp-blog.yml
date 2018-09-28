@@ -5,7 +5,7 @@
   connection: local
   gather_facts: False
   tasks:
-    - name: DigitalOcean | set ssh
+    - name: Set SSH
       digital_ocean:
         state: present
         command: ssh
@@ -15,17 +15,21 @@
       register: public_ssh_key
 
     # Create a droplet and a corresponding domain record
-    - name: DigitalOcean | create droplet
+    - name: Create droplet
       digital_ocean:
         state: present
         name: "{{ inventory_hostname }}"
-        size_id: 512mb
+        size_id: s-1vcpu-1gb
         region_id: fra1
-        image_id: ubuntu-16-04-x64
+        image_id: ubuntu-18-04-x64
         ssh_key_ids: "{{ public_ssh_key.ssh_key.id }}"
         api_token: "{{ DO_API_TOKEN }}"
+        backups_enabled: no
+        user_data: null
+        ipv6: yes
         unique_name: yes
         wait: yes
+        wait_timeout: 600
       register: new_droplet
 
     - name: Add new host to inventory
@@ -34,23 +38,34 @@
         group: droplets
         ansible_ssh_user: root
         ansible_ssh_host: "{{ new_droplet.droplet.ip_address }}"
-        ansible_ssh_private_key_file: "~/.ssh/id_rsa.pub"
+        ansible_ssh_private_key_file: "~/.ssh/id_rsa"
       when: new_droplet.droplet is defined
 
-    - name: DigitalOcean | assign droplet
+    - name: Flush old IPs from SSH known_hosts file.
+      shell: 'ssh-keygen -f "$HOME/.ssh/known_hosts" -R {{ new_droplet.droplet.ip_address }}'
+      when: new_droplet.changed
+
+    - name: Add new IP to SSH known_hosts file.
+      shell: 'ssh-keyscan -H -T 10 {{ new_droplet.droplet.ip_address }} >> "$HOME/.ssh/known_hosts"'
+      when: new_droplet.changed
+
+    - name: Assign domains to droplet
       digital_ocean_domain:
         state: present
-        name: "{{ inventory_hostname }}"
+        name: "{{ item }}"
         ip: "{{ new_droplet.droplet.ip_address }}"
         api_token: "{{ DO_API_TOKEN }}"
       when: new_droplet.droplet is defined
+      with_items:
+        - "{{ inventory_hostname }}"
+        - "www.{{ inventory_hostname }}"
 
 - name: Check for python2.7
   hosts: wp-blog
   gather_facts: False
   tasks:
     - name: install python 2.7
-      raw: test -e /usr/bin/python || (sudo apt -y -qq update && sudo apt install -y -qq python-minimal libpython2.7-dev python-pip)
+      raw: test -e /usr/bin/python || (sudo apt -y -qq update && sudo apt install -y -qq python-minimal libpython2.7-dev python-pip python-simplejson)
       changed_when: False
 
 - name: Deploy MySQL servers and databases
@@ -63,26 +78,16 @@
   - name: Add MySQL Server repository
     apt_repository: repo='deb http://repo.mysql.com/apt/debian/ jessie mysql-5.6' state=present
 
-- name: make sure SSL certificate is installed
+- name: Deploy Letsencrypt
   hosts: wp-blog
-  tasks:
-    - copy:
-        content="{{ ssl_certificate }}"
-        dest=/etc/ssl/certs/server.crt
-        owner=root
-        group=root
-        mode=0644
-
-- name: make sure SSL private key is installed
-  hosts: wp-blog
-  tasks:
-    - copy:
-        content="{{ ssl_private_key }}"
-        dest=/etc/ssl/private/server.key
-        owner=root
-        group=root
-        mode=0600
-      no_log: true
+  roles:
+    - role: letsencrypt
+      letsencrypt_webroot_path: /var/www/html
+      letsencrypt_email: gregbiv@gmail.com
+      letsencrypt_cert_domains:
+       - www.kornienko.site
+       - kornienko.site
+      letsencrypt_renewal_command_args: '--renew-hook "systemctl restart nginx"'
 
 - name: Configure WP application
   hosts: wp-blog

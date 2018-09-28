@@ -19,3 +19,5 @@
 - name: users
   src: git+https://github.com/singleplatform-eng/ansible-users.git
   version: v1.2.4
+- name: letsencrypt
+  src: git+https://github.com/thefinn93/ansible-letsencrypt.git
