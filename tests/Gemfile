@@ -1,0 +1,12 @@
+source 'https://rubygems.org'
+
+group :production do
+  gem 'test-kitchen'
+  gem 'kitchen-vagrant'
+  gem 'kitchen-docker'
+  gem 'kitchen-ansiblepush'
+  gem 'kitchen-goss'
+  gem 'kitchen-verifier-serverspec'
+  gem 'net-ssh'#, :git => 'https://github.com/net-ssh/net-ssh.git', :ref => 'v3.2.0'
+  gem 'serverspec'
+end

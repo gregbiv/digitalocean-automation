@@ -1,0 +1,14 @@
+---
+fallback_environment: "staging"
+letsencrypt_email   : "gregbiv@gmail.com"
+
+# Always force deployments in kitchen
+deployment_force    : true
+
+# Disable reboot of machine in apt role because kitchen break
+upgrade_now         : False
+
+# make sure vagrant user is part of our admin group. So he's not locked out of sudo
+usermanage_usersdb :
+      vagrant      :
+       group       : "admin"

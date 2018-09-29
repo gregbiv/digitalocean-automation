@@ -29,8 +29,9 @@ nginx_site                          :
          error_log                  : '/var/log/nginx/error-{{ inventory_hostname }}.log'
          add_header                 : "X-Backend-Server $hostname"
 
-         ssl_certificate            : "/etc/ssl/certs/server.crt"
-         ssl_certificate_key        : "/etc/ssl/private/server.key"
+         ssl_certificate            : '/etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem'
+         ssl_certificate_key        : '/etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem'
+         ssl_trusted_certificate    : '/etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem'
        # try to serve file directly, fallback to index.php
          location0                   :
             type                     : "location"

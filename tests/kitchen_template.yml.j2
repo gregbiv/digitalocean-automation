@@ -1,0 +1,49 @@
+---
+## Warning: these are NOT comments. Leave them here for ruby to evaluate them.
+# <%= require 'yaml' %>
+###############################################################################
+
+# Ansible Group name must match play file in plays directory and group name in group_vars
+group_name                  : <%= group_name = File.basename(File.expand_path(".")) %>
+
+driver                      :
+  name                      : <%= if ENV['TEST_DOCKER'] then 'docker' else 'vagrant' end  %>
+  box                       : ubuntu/bionic64
+  customize                 :
+    cpus                    : 2
+    memory                  : 2048
+
+# use remote serverspec
+verifier                    :
+  name                      : serverspec
+  remote_exec               : false
+  default_pattern           : true
+
+transport:
+  ssh_key                   : <%= if ENV['TEST_DOCKER'] then nil else ENV['ANSIBLE_PRIVATE_KEY_FILE'] || "#{ENV['HOME']}/.ssh/id_rsa" end %>
+  connection_timeout        : 120
+  username                  : <%= if ENV['TEST_DOCKER'] then 'kitchen' else 'vagrant' end  %>
+
+# Global provision config
+provisioner                 :
+    name                    : ansible_push
+    verbose                 : "<%= ENV['ANSIBLE_KITCHEN_VERBOSE'] || nil %>"
+    ansible_config          : "../tests_ansible.cfg"
+    raw_arguments           : "--inventory-file=../../tests.ini"
+    extra_vars              : "@kitchen_vars.yml"
+    mygroup                 : "<%= group_name %>"
+    skip_tags               : [ "provision", "newrelic" ]
+    playbook                : "../../plays/<%= group_name %>.yml"
+    tags                    : <%= ENV['ANSIBLE_KITCHEN_TAGS'] || nil %>
+    diff                    : <%= ENV['ANSIBLE_KITCHEN_DIFF'] || false %>
+    idempotency_test        : True
+    sudo                    : "sudo -E"
+    chef_bootstrap_url      : nil
+
+platforms                   :
+    - name                  : "u1804"
+      provisioner           :
+        ansible_playbook_bin: "`avm path v2.2`ansible-playbook"
+
+suites                      :
+  - name                    : "<%= group_name %>"
