@@ -1,0 +1,62 @@
+---
+
+- name: Manage test groups
+  hosts: all
+  gather_facts: no
+  connection: local
+  vars:
+    kitchen_template_file            : "kitchen_template.yml.j2"
+
+  vars_prompt:
+    - name: "group_name"
+      prompt: "what is the group name ? "
+      private: no
+      when: group_name is not defined
+
+  tasks:
+
+   - name: Ensure group directory exist
+     file:
+        path="{{ item }}"
+        state=directory
+        mode=0755
+     with_items:
+      - "{{ group_name }}/test/integration/{{ group_name }}/serverspec"
+
+   - name: Ensure .kitchen config exists
+     template:
+        src="{{ kitchen_template_file }}"
+        dest="{{ group_name }}/.kitchen.yml"
+        mode=0644
+
+   - name: Check kitchen_vars.yml file status
+     stat:
+        path="{{ group_name }}/kitchen_vars.yml"
+     register: kitchen_var_stat
+
+   - name: Copy kitchen_vars.yml if needed
+     copy:
+        src="kitchen_vars_template.yml"
+        dest="{{ group_name }}/kitchen_vars.yml"
+        mode=0644
+     when: not kitchen_var_stat.stat.exists
+
+   - name: Link Gemfile and lock
+     file:
+        src="../{{ item }}"
+        dest="{{ group_name }}/{{ item }}"
+        state=link
+     with_items:
+        - "Gemfile"
+        - "Gemfile.lock"
+
+   - name: Link common tests
+     file:
+        src="../../../../../{{ item }}"
+        dest="{{ group_name }}/test/integration/{{ group_name }}/serverspec/{{ item }}"
+        state=link
+     with_items:
+        - "test_common_spec.rb"
+
+   - name: Install ruby gems
+     shell: bundle install
