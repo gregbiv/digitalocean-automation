@@ -1,0 +1,5 @@
+---
+redis_version           : 4.0.2
+redis_maxmemory         : "512mb"
+redis_maxmemory_policy  : volatile-lru
+redis_save              : []

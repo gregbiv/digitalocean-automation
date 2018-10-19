@@ -68,27 +68,6 @@ deployment_post_scripts                         :
                                                   - >-
                                                     sudo -u {{ deployment_user }} bash -c "{{ deployment_dir_work }}/vendor/bin/phinx migrate -c {{ deployment_dir_work }}/config/phinx.php"
 deployment_env_vars                             :
-  staging                                       :
-    DB_NAME                                     : "wordpress"
-    DB_USER                                     : "wordpress"
-    DB_PASSWORD                                 : "{{ MYSQL_WORDPRESS_PASSWORD }}"
-
-    # Optional variables
-    DB_HOST                                     : "localhost"
-    DB_PREFIX                                   : "wp_"
-
-    WP_ENV                                      : "staging"
-    WP_HOME                                     : "https://{{ inventory_hostname }}"
-    WP_SITEURL                                  : "https://{{ inventory_hostname }}/wp"
-
-    AUTH_KEY                                    : '{{ AUTH_KEY }}'
-    SECURE_AUTH_KEY                             : '{{ SECURE_AUTH_KEY }}'
-    LOGGED_IN_KEY                               : '{{ LOGGED_IN_KEY }}'
-    NONCE_KEY                                   : '{{ NONCE_KEY }}'
-    AUTH_SALT                                   : '{{ AUTH_SALT }}'
-    SECURE_AUTH_SALT                            : '{{ SECURE_AUTH_SALT }}'
-    LOGGED_IN_SALT                              : '{{ LOGGED_IN_SALT }}'
-    NONCE_SALT                                  : '{{ NONCE_SALT }}'
   live                                          :
     DB_NAME                                     : "wordpress"
     DB_USER                                     : "wordpress"
@@ -97,6 +76,11 @@ deployment_env_vars                             :
     # Optional variables
     DB_HOST                                     : "localhost"
     DB_PREFIX                                   : "wp_"
+
+    WP_DEBUG                                    : "true"
+
+    WP_REDIS_HOST                               : "127.0.0.1"
+    WP_REDIS_PORT                               : "6379"
 
     WP_ENV                                      : "live"
     WP_HOME                                     : "https://{{ inventory_hostname }}"

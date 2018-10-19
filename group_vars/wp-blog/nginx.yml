@@ -25,7 +25,7 @@ nginx_site                          :
          server_name                : "{{ inventory_hostname }} www.{{ inventory_hostname }}"
          root                       : "{{ deployment_dir_current }}/web"
          index                      : "index.php index.html index.htm"
-         access_log                 : '/var/log/nginx/access-{{ inventory_hostname }}.log'
+         access_log                 : "off"
          error_log                  : '/var/log/nginx/error-{{ inventory_hostname }}.log'
          add_header                 : "X-Backend-Server $hostname"
 
@@ -36,7 +36,7 @@ nginx_site                          :
          location0                   :
             type                     : "location"
             name                     : "/"
-            try_files                : "$uri /index.php$is_args$args"
+            try_files                : "$uri $uri/ /index.php?$args"
 
         # PROD
          location1                  :

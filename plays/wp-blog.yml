@@ -101,3 +101,4 @@
     - { role: deployment,                                tags: ["deployment"]                    }
     - { role: nginx,                                     tags: ["nginx", "deployment"]           }
     - { role: logrotate,                                 tags: ["logrotate", "logging"]          }
+    - { role: redis,                                     tags: ["redis"]                         }
