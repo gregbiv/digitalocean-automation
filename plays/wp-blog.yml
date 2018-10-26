@@ -59,6 +59,8 @@
       with_items:
         - "{{ inventory_hostname }}"
         - "www.{{ inventory_hostname }}"
+        - "design.{{ inventory_hostname }}"
+        - "www.design.{{ inventory_hostname }}"
 
 - name: Check for python2.7
   hosts: wp-blog
@@ -85,8 +87,10 @@
       letsencrypt_webroot_path: /var/www/html
       letsencrypt_email: gregbiv@gmail.com
       letsencrypt_cert_domains:
-       - www.kornienko.site
-       - kornienko.site
+        - "{{ inventory_hostname }}"
+        - "www.{{ inventory_hostname }}"
+        - "design.{{ inventory_hostname }}"
+        - "www.design.{{ inventory_hostname }}"
       letsencrypt_renewal_command_args: '--renew-hook "systemctl restart nginx"'
 
 - name: Configure WP application
