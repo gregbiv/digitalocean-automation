@@ -42,6 +42,10 @@ deployment_config_fastcgi_parm_vars             :
             - vars                              : "{{ deployment_env_vars[environment_name] }}"
               dest                              : "{{ deployment_dir_work }}/fastcgi_env_vars"
 
+deployment_config_custom                        :
+            - src                               : "~/cloud_credentials.json"
+              dest                              : "{{ deployment_dir_work }}/cloud_credentials.json"
+
 # different config between live and staging
 deployment_vars_per_environment                 :
   staging                                       :
@@ -86,6 +90,11 @@ deployment_env_vars                             :
     WP_HOME                                     : "https://{{ inventory_hostname }}"
     WP_SITEURL                                  : "https://{{ inventory_hostname }}/wp"
 
+    WP_MULTISITE                                : "true"
+    WP_MULTISITE_SUBDOMAIN_INSTALL              : "true"
+    WP_MULTISITE_DOMAIN_CURRENT_SITE            : "kornienko.site"
+    WP_MULTISITE_PATH_CURRENT_SITE              : "/"
+
     AUTH_KEY                                    : '{{ AUTH_KEY }}'
     SECURE_AUTH_KEY                             : '{{ SECURE_AUTH_KEY }}'
     LOGGED_IN_KEY                               : '{{ LOGGED_IN_KEY }}'
@@ -94,3 +103,7 @@ deployment_env_vars                             :
     SECURE_AUTH_SALT                            : '{{ SECURE_AUTH_SALT }}'
     LOGGED_IN_SALT                              : '{{ LOGGED_IN_SALT }}'
     NONCE_SALT                                  : '{{ NONCE_SALT }}'
+
+    ILAB_CLOUD_STORAGE_PROVIDER                 : "google"
+    ILAB_CLOUD_BUCKET                           : "gregbiv-wp-uploads"
+    ILAB_CLOUD_GOOGLE_CREDENTIALS               : "{{ deployment_dir_work }}/cloud_credentials.json"
